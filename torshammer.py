@@ -81,7 +81,10 @@ def main(argv):
 
     rthreads = []
     for i in range(threads):
-        t = channel.http(target, port, tor)
+        if smtp is True:
+            t = channel.smtp(target, port, tor)
+        else:
+            t = channel.http(target, port, tor)
         rthreads.append(t)
         t.start()
 
