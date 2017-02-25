@@ -92,9 +92,9 @@ def main(argv):
         try:
             rthreads = [t.join(1) for t in rthreads if t is not None and t.isAlive()]
         except KeyboardInterrupt:
-            print "\nShutting down threads...\n"
+            print "\nShutting down\n"
             for t in rthreads:
-                stop_now = True
+                print("Stopping thread")
                 t.running = False
 
 if __name__ == "__main__":
